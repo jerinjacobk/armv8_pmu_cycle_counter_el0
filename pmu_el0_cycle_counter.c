@@ -24,6 +24,8 @@ enable_cycle_counter_el0(void* data)
 	val |= (BIT(0) | BIT(2));
         isb();
         asm volatile("msr pmcr_el0, %0" : : "r" (val));
+	val = BIT(27);
+	asm volatile("msr pmccfiltr_el0, %0" : : "r" (val));
 }
 
 static void
