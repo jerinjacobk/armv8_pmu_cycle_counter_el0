@@ -12,7 +12,7 @@
 static void
 enable_cycle_counter_el0(void* data)
 {
-        u64 val;
+	u64 val;
 	/* Disable cycle counter overflow interrupt */
 	asm volatile("msr pmintenset_el1, %0" : : "r" ((u64)(0 << 31)));
 	/* Enable cycle counter */
@@ -22,8 +22,8 @@ enable_cycle_counter_el0(void* data)
 	/* Clear cycle counter and start */
 	asm volatile("mrs %0, pmcr_el0" : "=r" (val));
 	val |= (BIT(0) | BIT(2));
-        isb();
-        asm volatile("msr pmcr_el0, %0" : : "r" (val));
+	isb();
+	asm volatile("msr pmcr_el0, %0" : : "r" (val));
 	val = BIT(27);
 	asm volatile("msr pmccfiltr_el0, %0" : : "r" (val));
 }
