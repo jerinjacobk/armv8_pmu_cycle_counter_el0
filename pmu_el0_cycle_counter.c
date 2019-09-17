@@ -8,6 +8,7 @@
 #include <linux/slab.h>
 #include <linux/uaccess.h>
 #include <linux/fs.h>
+#include <linux/platform_device.h>
 #include "pmuctl.h"
 
 #if !defined(__aarch64__)
