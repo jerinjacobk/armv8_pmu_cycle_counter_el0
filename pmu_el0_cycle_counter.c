@@ -9,6 +9,7 @@
 #include <linux/uaccess.h>
 #include <linux/fs.h>
 #include <linux/platform_device.h>
+#include <linux/version.h>
 #include "pmuctl.h"
 
 #if !defined(__aarch64__)
@@ -214,11 +215,21 @@ pmuctl_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 		return -ENOTTY;
 
 	if (_IOC_DIR(cmd) & _IOC_READ)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0)
 		err = !access_ok(VERIFY_WRITE, (void __user *)arg,
 				 _IOC_SIZE(cmd));
+#else
+		err = !access_ok((void __user *)arg,
+				 _IOC_SIZE(cmd));
+#endif
 	else if (_IOC_TYPE(cmd) & _IOC_WRITE)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 0, 0)
 		err = !access_ok(VERIFY_READ, (void __user *)arg,
 				 _IOC_SIZE(cmd));
+#else
+		err = !access_ok((void __user *)arg,
+				 _IOC_SIZE(cmd));
+#endif
 
 	if (err)
 		return -EFAULT;
