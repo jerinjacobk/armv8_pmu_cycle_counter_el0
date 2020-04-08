@@ -9,10 +9,15 @@
 #include <linux/uaccess.h>
 #include <linux/fs.h>
 #include <linux/platform_device.h>
+#include <linux/version.h>
 #include "pmuctl.h"
 
 #if !defined(__aarch64__)
 #error Module can only be compiled on ARM64 machines.
+#endif
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0)
+#define pmu_access_ok(x,y,z) access_ok((y),(z))
 #endif
 
 struct pmu_ctl_cfg {
@@ -214,10 +219,10 @@ pmuctl_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 		return -ENOTTY;
 
 	if (_IOC_DIR(cmd) & _IOC_READ)
-		err = !access_ok(VERIFY_WRITE, (void __user *)arg,
+		err = !pmu_access_ok(VERIFY_WRITE, (void __user *)arg,
 				 _IOC_SIZE(cmd));
 	else if (_IOC_TYPE(cmd) & _IOC_WRITE)
-		err = !access_ok(VERIFY_READ, (void __user *)arg,
+		err = !pmu_access_ok(VERIFY_READ, (void __user *)arg,
 				 _IOC_SIZE(cmd));
 
 	if (err)
