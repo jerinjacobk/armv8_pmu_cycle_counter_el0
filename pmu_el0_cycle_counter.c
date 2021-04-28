@@ -42,7 +42,7 @@ pmccntr_modify(const char *arg, size_t size);
 static ssize_t
 pmuctl_read(struct file *f, char __user *userbuf, size_t count, loff_t *ppos);
 static ssize_t
-pmuctl_write(struct file *f, const char __user *ubuf, size_t cnt, loff_t *off);
+pmuctl_write(struct file *f, const char __user *userbuf, size_t count, loff_t *ppos);
 static long
 pmuctl_ioctl(struct file *f, unsigned int cmd, unsigned long arg);
 
@@ -163,17 +163,17 @@ err_free:
 }
 
 static ssize_t
-pmuctl_write(struct file *f, const char __user *ubuf, size_t cnt, loff_t *off)
+pmuctl_write(struct file *f, const char __user *userbuf, size_t count, loff_t *ppos)
 {
 	char *buf, *name, *val;
 	int i, ret = -EIO;
 
-	if (cnt > PAGE_SIZE)
+	if (count > PAGE_SIZE)
 		return -E2BIG;
 	buf = kzalloc(PAGE_SIZE, GFP_KERNEL);
 	if (buf == NULL)
 		return -ENOMEM;
-	if (copy_from_user(buf, ubuf, cnt)) {
+	if (copy_from_user(buf, userbuf, count)) {
 		ret = -EIO;
 		goto err_copy;
 	}
@@ -190,9 +190,9 @@ pmuctl_write(struct file *f, const char __user *ubuf, size_t cnt, loff_t *off)
 		if (strcmp(pmu_ctls[i].name, name))
 			continue;
 		if (pmu_ctls[i].modify != NULL) {
-			ret = pmu_ctls[i].modify(val, cnt - (val - name));
+			ret = pmu_ctls[i].modify(val, count - (val - name));
 			if (ret == 0)
-				ret = cnt;
+				ret = count;
 		} else {
 			dev_err(pmuctl_dev.this_device,
 				"PMU %s not modifiable\n", pmu_ctls[i].name);
