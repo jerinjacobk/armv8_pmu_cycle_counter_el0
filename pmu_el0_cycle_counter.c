@@ -74,7 +74,7 @@ enable_cycle_counter_el0(void* data)
 {
 	u64 val;
 	/* Disable cycle counter overflow interrupt */
-	asm volatile("msr pmintenset_el1, %0" : : "r" ((u64)(0 << 31)));
+	asm volatile("msr pmintenclr_el1, %0" : : "r" ((u64)(1 << 31)));
 	/* Enable cycle counter */
 	asm volatile("msr pmcntenset_el0, %0" :: "r" BIT(31));
 	/* Enable user-mode access to cycle counters. */
