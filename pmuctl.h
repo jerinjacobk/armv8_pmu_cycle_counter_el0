@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: (BSD-3-Clause OR LGPL-2.1) */
 #ifndef _PMUCTL_H
 #define _PMUCTL_H
 
