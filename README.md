@@ -5,6 +5,8 @@ This module allows user to control access to ARMv8 PMU counters from userspace.
 
 It was initially created just for enabling userspace access to *Performance Monitors Cycle Count Register* (**PMCCNTR_EL0**) for use in dataplane software such as [DPDK](http://dpdk.org/dev/patchwork/patch/15225/) framework. It has been later extended to provide a general purpose interface for managing ARMv8 PMU counters.
 
+Further adding support to enable/disable user mode access to Counter Timer Kernel Control register.
+
 ## Compilation
 
 ```sh
@@ -66,6 +68,10 @@ Additionally module creates a device (`/dev/pmuctl`) which can be used to enable
 ### Supported PMU counters
 
 1. **Performance Monitors Cycle Count Register**: `name` is `PMCCNTR`, `value` is `0` to disable EL0 access, `1` to enable EL0 access.
+
+### Support for Counter-timer Kernel Control
+
+1. **Counter-timer Kernel Control Register**: `name` is `CNTKCTL, `value` is `0` to disable EL0 access, `1` to enable EL0 access.
 
 ## Adding support for new counters
 

@@ -12,6 +12,7 @@
 #include <linux/platform_device.h>
 #include <linux/version.h>
 #include "pmuctl.h"
+#include "pmu_tmr_ctl.h"
 
 #if !defined(__aarch64__)
 #error Module can only be compiled on ARM64 machines.
@@ -52,6 +53,11 @@ static struct pmu_ctl_cfg pmu_ctls[PM_CTL_CNT] = {
 		.name	= "PMCCNTR",
 		.show	= pmccntr_show,
 		.modify	= pmccntr_modify
+	},
+	[PM_CTL_CNTKCTL] = {
+		.name	= "CNTKCTL",
+		.show	= pmcntkctl_show,
+		.modify	= pmcntkctl_modify
 	}
 };
 
@@ -243,6 +249,15 @@ pmuctl_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 		else
 			on_each_cpu(disable_cycle_counter_el0, NULL, 1);
 		break;
+
+	case PMU_IOC_CNTKCTL: /* Enable Physical Timer Control EL0 access */
+		if (copy_from_user(&pmccntr, (void *)arg, _IOC_SIZE(cmd))) {
+			ret = -EIO;
+			break;
+		}
+		pm_cntkctl_handler(pmccntr.enable);
+		break;
+
 	default:
 		ret = -ENOTTY;
 	}
@@ -274,6 +289,7 @@ static void __exit
 fini(void)
 {
 	on_each_cpu(disable_cycle_counter_el0, NULL, 1);
+	pm_cntkctl_fini();
 
 	misc_deregister(&pmuctl_dev);
 }
